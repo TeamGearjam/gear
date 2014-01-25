@@ -47,9 +47,8 @@ public class SplineController : MonoBehaviour
 	void Start()
 	{
 		mSplineInterp = GetComponent(typeof(SplineInterpolator)) as SplineInterpolator;
-
 		mTransforms = GetTransforms();
-
+		
 		if (HideOnExecute)
 			DisableTransforms();
 

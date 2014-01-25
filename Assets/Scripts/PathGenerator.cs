@@ -8,6 +8,7 @@ public class PathGenerator : MonoBehaviour {
 	public float sectionOffset = 2.0f;
 	
 	public Transform splinePath;
+	public CurvedPath curvedPath;
 	
 	private SplineController splineController;
 	
@@ -16,19 +17,16 @@ public class PathGenerator : MonoBehaviour {
 		splineController = this.GetComponent<SplineController>();
 		for(int i = 0; i < 10; i++)
 		{
-			NextNode();	
+			AddCurvedNode();	
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if(Input.GetKey(KeyCode.Space))
-		{
-			splineController.FollowSpline();	
-		}
+		
 	}
 	
-	void NextNode()
+	void AddNode()
 	{
 		Transform last = this.transform;
 		
@@ -39,9 +37,32 @@ public class PathGenerator : MonoBehaviour {
 		if(splinePath.childCount > 0)
 		{
 			last = splinePath.GetChild(splinePath.childCount - 1);
+			newNode.rotation *= Quaternion.Euler(0,0,Random.Range(-maxSectionAngle, maxSectionAngle));
 			newNode.position = last.position + last.forward * sectionDistance + last.right * Random.Range(-sectionOffset, sectionOffset) + last.up * Random.Range(-sectionOffset, sectionOffset);
 		}
 		
 		newNode.parent = splinePath;
+	}
+	
+	void AddCurvedNode()
+	{
+		Transform last = this.transform;
+		
+		Transform newNode = new GameObject("" + splinePath.childCount).transform;
+		
+		newNode.transform.position = last.position;
+		
+		if(splinePath.childCount > 0)
+		{
+			last = splinePath.GetChild(splinePath.childCount - 1);
+			newNode.rotation *= Quaternion.Euler(0,0,Random.Range(-maxSectionAngle, maxSectionAngle));
+			newNode.position = last.position + last.forward * sectionDistance + last.right * Random.Range(-sectionOffset, sectionOffset) + last.up * Random.Range(-sectionOffset, sectionOffset);
+		}
+		
+		newNode.parent = splinePath;
+		CurvedPath.Point point = new CurvedPath.Point();
+		point.position = newNode.position;
+		point.rotation = newNode.rotation;
+		curvedPath.AddNode(point);
 	}
 }
