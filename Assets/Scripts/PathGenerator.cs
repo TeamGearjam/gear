@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(SplineController))]
 public class PathGenerator : MonoBehaviour {
 	public float maxSectionAngle = 30.0f;
 	public float sectionDistance = 10.0f;
@@ -10,11 +9,8 @@ public class PathGenerator : MonoBehaviour {
 	public Transform splinePath;
 	public CurvedPath curvedPath;
 	
-	private SplineController splineController;
-	
 	// Use this for initialization
 	void Start () {
-		splineController = this.GetComponent<SplineController>();
 		for(int i = 0; i < 10; i++)
 		{
 			AddCurvedNode();	
@@ -60,7 +56,7 @@ public class PathGenerator : MonoBehaviour {
 		}
 		
 		newNode.parent = splinePath;
-		CurvedPath.Point point = new CurvedPath.Point();
+		Transform point = new GameObject("").transform;
 		point.position = newNode.position;
 		point.rotation = newNode.rotation;
 		curvedPath.AddNode(point);
