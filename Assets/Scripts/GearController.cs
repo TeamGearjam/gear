@@ -6,11 +6,13 @@ public class GearController : MonoBehaviour {
 	public float rotSpeed;
 	public float laneDistance;
 	public Transform gear;
+	public Transform particle;
 	
 	enum Lane { Top, Bottom, Left, Right };
 	
 	private bool jumping;
 	private Lane targetLane = Lane.Left; 
+	private bool reverse = true;
 	
 	// Use this for initialization
 	void Start () {
@@ -19,7 +21,7 @@ public class GearController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		gear.Rotate(0, rotSpeed * Time.deltaTime, 0, Space.Self);
+		gear.Rotate(0, rotSpeed * Time.deltaTime * (reverse ? -1.0f : 1.0f), 0, Space.Self);
 		if(!jumping)
 		{
 			if(Input.GetAxisRaw("Horizontal") < 0)
@@ -57,18 +59,26 @@ public class GearController : MonoBehaviour {
 		case Lane.Bottom:
 			targetPos = new Vector3(0, -laneDistance,0);
 			targetRot = 90;
+			reverse = true;
+			particle.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 			break;
 		case Lane.Top:
 			targetPos = new Vector3(0, laneDistance,0);
 			targetRot = 90;
+			reverse = false;
+			particle.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
 			break;
 		case Lane.Left:
 			targetPos = new Vector3(-laneDistance, 0, 0);
 			targetRot = 0;
+			reverse = true;
+			particle.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 			break;
 		case Lane.Right:
 			targetPos = new Vector3(laneDistance, 0, 0);
 			targetRot = 0;
+			reverse = false;
+			particle.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
 			break;
 		default:
 			break;
