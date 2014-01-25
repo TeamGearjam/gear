@@ -56,7 +56,7 @@ public class GearController : MonoBehaviour {
 		{
 		case Lane.Bottom:
 			targetPos = new Vector3(0, -laneDistance,0);
-			targetRot = 90;
+			targetRot = 270;
 			break;
 		case Lane.Top:
 			targetPos = new Vector3(0, laneDistance,0);
@@ -68,7 +68,7 @@ public class GearController : MonoBehaviour {
 			break;
 		case Lane.Right:
 			targetPos = new Vector3(laneDistance, 0, 0);
-			targetRot = 0;
+			targetRot = 180;
 			break;
 		default:
 			break;
@@ -79,6 +79,14 @@ public class GearController : MonoBehaviour {
 			float percent = i / jumpTime;
 			transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, percent);
 			Vector3 rot = transform.localRotation.eulerAngles;
+			if(rot.z - targetRot > 180)
+			{
+				rot.z -= 360;	
+			}
+			else if(targetRot - rot.z > 180)
+			{
+				targetRot -= 360;
+			}
 			rot.z = Mathf.Lerp(rot.z, targetRot, percent);
 			transform.localRotation = Quaternion.Euler(rot);
 			yield return null;	
