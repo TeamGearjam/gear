@@ -2,9 +2,15 @@
 using System.Collections;
 
 public class GearController : MonoBehaviour {
+	public float jumpTime;
 	public float rotSpeed;
 	public float laneDistance;
+	public Transform gear;
 	
+	enum Lane { Top, Bottom, Left, Right };
+	
+	private bool jumping;
+	private Lane targetLane = Lane.Left; 
 	
 	// Use this for initialization
 	void Start () {
@@ -13,18 +19,70 @@ public class GearController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.Rotate(0, rotSpeed, 0, Space.Self);
-		if(Input.GetAxisRaw("Horizontal") < 0)
+		gear.Rotate(0, rotSpeed * Time.deltaTime, 0, Space.Self);
+		if(!jumping)
 		{
-			transform.localPosition = new Vector3(-laneDistance, 0,0);
+			if(Input.GetAxisRaw("Horizontal") < 0)
+			{
+				JumpToLane(Lane.Left);
+			}
+			else if(Input.GetAxisRaw("Horizontal") > 0)
+			{
+				JumpToLane(Lane.Right);
+			}
+			else if(Input.GetAxisRaw("Vertical") < 0)
+			{
+				JumpToLane(Lane.Bottom);
+			}
+			else if(Input.GetAxisRaw("Vertical") > 0)
+			{
+				JumpToLane(Lane.Top);
+			}
 		}
-		else if(Input.GetAxisRaw("Horizontal") > 0)
+	}
+	
+	void JumpToLane(Lane lane)
+	{
+		jumping = true;
+		targetLane = lane;
+		StartCoroutine("Jump");
+	}
+	
+	IEnumerator Jump()
+	{
+		Vector3 targetPos = Vector3.zero;
+		float targetRot = 0;
+		switch(targetLane)
 		{
-			transform.localPosition = new Vector3(laneDistance, 0,0);
+		case Lane.Bottom:
+			targetPos = new Vector3(0, -laneDistance,0);
+			targetRot = 90;
+			break;
+		case Lane.Top:
+			targetPos = new Vector3(0, laneDistance,0);
+			targetRot = 90;
+			break;
+		case Lane.Left:
+			targetPos = new Vector3(-laneDistance, 0, 0);
+			targetRot = 0;
+			break;
+		case Lane.Right:
+			targetPos = new Vector3(laneDistance, 0, 0);
+			targetRot = 0;
+			break;
+		default:
+			break;
 		}
-		if(Input.GetAxisRaw("Vertical") < 0)
+		
+		for(float i = 0.0f; i < jumpTime; i += Time.deltaTime)
 		{
-			transform.localPosition = new Vector3(0, -laneDistance,0);
+			float percent = i / jumpTime;
+			transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, percent);
+			Vector3 rot = transform.localRotation.eulerAngles;
+			rot.z = Mathf.Lerp(rot.z, targetRot, percent);
+			transform.localRotation = Quaternion.Euler(rot);
+			yield return null;	
 		}
+		jumping = false;
 	}
 }

@@ -48,6 +48,7 @@
      <Compile Include="Assets\Scripts\GearController.cs" />
      <Compile Include="Assets\Scripts\PathGenerator.cs" />
      <Compile Include="Assets\Scripts\SmoothFollowCamera.cs" />
+     <Compile Include="Assets\iTween\Plugins\iTween.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass-vs.csproj">

@@ -28,7 +28,6 @@ public class SplineInterpolator : MonoBehaviour
 	OnEndCallback mOnEndCallback;
 
 
-
 	void Awake()
 	{
 		Reset();
