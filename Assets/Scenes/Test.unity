@@ -2141,6 +2141,7 @@ MonoBehaviour:
   rotSpeed: 1000
   laneDistance: 2
   gear: {fileID: 1934311071}
+  particle: {fileID: 1226372137}
 --- !u!1 &1815094550
 GameObject:
   m_ObjectHideFlags: 0
