@@ -6,80 +6,100 @@ public class GearController : MonoBehaviour {
 	public float rotSpeed;
 	public float laneWidth = 3.0f;
 	private float gearRadius;
+	public float forceFactor;
+	public float torqueFactor;
 	public Transform gear;
 	public Transform particleAnchor;
 	public Transform particle;
 	public Gear[] gears;
 	public int targetGear;
 	public float holdTime;
+	public PathController pathController;
+	public float deathTime = 2f;
 	
 	enum Lane { Top, Bottom, Left, Right };
 	
 	private bool jumping;
-	private Lane currentLane = Lane.Left;
-	private Lane targetLane = Lane.Left; 
+	private Lane currentLane = Lane.Bottom;
+	private Lane targetLane = Lane.Bottom; 
 	private bool reverse = true;
 	private int currentGear = -1;
 	
+	private bool dead;
 	private bool holding;
 	private float hold;
 	
 	// Use this for initialization
 	void Start () {
-		transform.localPosition = Vector3.left * (laneWidth - gearRadius);
+		Reset();
 		SwitchGear();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		gear.Rotate(0, rotSpeed * Time.deltaTime * (reverse ? -1.0f : 1.0f), 0, Space.Self);
-		if(!jumping)
+		if(!dead)
 		{
-			if(Input.GetAxisRaw("Horizontal") < 0 && currentLane != Lane.Left)
+			gear.Rotate(0, rotSpeed * Time.deltaTime * (reverse ? -1.0f : 1.0f), 0, Space.Self);
+			if(!jumping)
 			{
-				JumpToLane(Lane.Left);
-			}
-			else if(Input.GetAxisRaw("Horizontal") > 0 && currentLane != Lane.Right)
-			{
-				JumpToLane(Lane.Right);
-			}
-			else if(Input.GetAxisRaw("Vertical") < 0 && currentLane != Lane.Bottom)
-			{
-				JumpToLane(Lane.Bottom);
-			}
-			else if(Input.GetAxisRaw("Vertical") > 0 && currentLane != Lane.Top)
-			{
-				JumpToLane(Lane.Top);
-			}
-			
-			if(Input.GetButton("SwitchGear") && hold > holdTime)
-			{
-				targetGear--;
-				targetGear = Mathf.Max(targetGear, 0);
-				SwitchGear();
-				hold = 0;
-			}
-			else if(Input.GetButtonDown("SwitchGear"))
-			{
-				holding = true;
-				targetGear++;
-				targetGear = Mathf.Min(targetGear, gears.Length - 1);
-				SwitchGear();
-			}
-			else if(Input.GetButtonUp("SwitchGear"))
-			{
-				holding = false;
-			}
-			
-			if(holding)
-			{
-				hold += Time.deltaTime;
-			}
-			else
-			{
-				hold = 0;	
+				if(Input.GetAxisRaw("Horizontal") < 0 && currentLane != Lane.Left)
+				{
+					JumpToLane(Lane.Left);
+				}
+				else if(Input.GetAxisRaw("Horizontal") > 0 && currentLane != Lane.Right)
+				{
+					JumpToLane(Lane.Right);
+				}
+				else if(Input.GetAxisRaw("Vertical") < 0 && currentLane != Lane.Bottom)
+				{
+					JumpToLane(Lane.Bottom);
+				}
+				else if(Input.GetAxisRaw("Vertical") > 0 && currentLane != Lane.Top)
+				{
+					JumpToLane(Lane.Top);
+				}
+				
+				if(Input.GetButton("SwitchGear") && hold > holdTime)
+				{
+					targetGear--;
+					targetGear = Mathf.Max(targetGear, 0);
+					SwitchGear();
+					hold = 0;
+				}
+				else if(Input.GetButtonDown("SwitchGear"))
+				{
+					holding = true;
+					targetGear++;
+					targetGear = Mathf.Min(targetGear, gears.Length - 1);
+					SwitchGear();
+				}
+				else if(Input.GetButtonUp("SwitchGear"))
+				{
+					holding = false;
+				}
+				
+				if(holding)
+				{
+					hold += Time.deltaTime;
+				}
+				else
+				{
+					hold = 0;	
+				}
 			}
 		}
+	}
+	
+	void Reset()
+	{
+		transform.localPosition = Vector3.down * (laneWidth - gearRadius);
+		transform.localRotation = Quaternion.Euler(0, 0, 270);
+		currentLane = Lane.Bottom;
+		targetLane = Lane.Bottom;
+		reverse = false;
+		particleAnchor.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+		
+		pathController.Reset();
 	}
 	
 	void JumpToLane(Lane lane)
@@ -181,6 +201,36 @@ public class GearController : MonoBehaviour {
 				particleAnchor.gameObject.SetActive(true);
 			}
 			yield return null;
+		}
+	}
+	
+	public void Gap()
+	{
+		StartCoroutine("Death");
+	}
+	
+	IEnumerator Death()
+	{
+		SetDead(true);
+		yield return new WaitForSeconds(deathTime);
+		SetDead(false);
+		Reset();
+	}
+	
+	void SetDead(bool state)
+	{
+		if(dead != state)
+		{
+			dead = state;
+			particleAnchor.gameObject.SetActive(!state);
+			pathController.doFollow = !state;
+			rigidbody.isKinematic = !state;
+			rigidbody.useGravity = state;
+			if(state)
+			{
+				rigidbody.AddForce(transform.forward * pathController.speed * forceFactor,ForceMode.VelocityChange);
+				rigidbody.AddTorque(-transform.up * rotSpeed / torqueFactor, ForceMode.VelocityChange);
+			}
 		}
 	}
 }

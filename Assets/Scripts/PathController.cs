@@ -20,6 +20,11 @@ public class PathController : MonoBehaviour {
 		}
 	}
 	
+	public void Reset()
+	{
+		time = 0;	
+	}
+	
 	void Follow()
 	{
 		time += speed * Time.deltaTime;
