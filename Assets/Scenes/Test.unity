@@ -598,7 +598,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 400000, guid: 1b84fc5c61cafcf498b5788a0fb3478c, type: 2}
       propertyPath: m_LocalPosition.x
-      value: .814621329
+      value: .800000012
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 1b84fc5c61cafcf498b5788a0fb3478c, type: 2}
       propertyPath: m_LocalPosition.y
@@ -606,7 +606,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 1b84fc5c61cafcf498b5788a0fb3478c, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -.180149078
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 1b84fc5c61cafcf498b5788a0fb3478c, type: 2}
       propertyPath: m_LocalRotation.x
@@ -657,7 +657,7 @@ Transform:
   m_PrefabInternal: {fileID: 208364373}
   m_GameObject: {fileID: 237099344}
   m_LocalRotation: {x: 0, y: .087155737, z: 0, w: .99619472}
-  m_LocalPosition: {x: .814621329, y: 0, z: -.180149078}
+  m_LocalPosition: {x: .800000012, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1226372137}
@@ -2072,7 +2072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14dce59ac93be9d43977289e0cc3b27d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1.5
+  radius: 1.37
 --- !u!1 &519187050
 GameObject:
   m_ObjectHideFlags: 0
@@ -2283,7 +2283,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &632288773
 Transform:
   m_ObjectHideFlags: 0
@@ -2353,7 +2353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14dce59ac93be9d43977289e0cc3b27d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 2
+  radius: .800000012
 --- !u!1 &650544842
 GameObject:
   m_ObjectHideFlags: 0
@@ -3205,7 +3205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14dce59ac93be9d43977289e0cc3b27d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1.85000002
+  radius: 1
 --- !u!1 &975291494
 GameObject:
   m_ObjectHideFlags: 0
@@ -3709,7 +3709,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: d90ea78029bd04048b6644b9bfb7aecd, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 100012, guid: d90ea78029bd04048b6644b9bfb7aecd, type: 3}
       propertyPath: m_Layer
@@ -3905,7 +3905,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14dce59ac93be9d43977289e0cc3b27d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1.85000002
+  radius: 1
 --- !u!1 &1414707492
 GameObject:
   m_ObjectHideFlags: 0
@@ -4307,15 +4307,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpTime: .800000012
   rotSpeed: 1000
-  laneDistance: 1.5
+  laneWidth: 3
   gear: {fileID: 1934311071}
-  particle: {fileID: 1226372137}
+  particleAnchor: {fileID: 1226372137}
+  particle: {fileID: 237099345}
   gears:
   - {fileID: 632288777}
   - {fileID: 1291622068}
   - {fileID: 968391071}
   - {fileID: 507387525}
   targetGear: 0
+  holdTime: .200000003
 --- !u!1 &1813890517
 GameObject:
   m_ObjectHideFlags: 0

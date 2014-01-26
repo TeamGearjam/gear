@@ -4,11 +4,14 @@ using System.Collections;
 public class GearController : MonoBehaviour {
 	public float jumpTime;
 	public float rotSpeed;
-	public float laneDistance;
+	public float laneWidth = 3.0f;
+	private float gearRadius;
 	public Transform gear;
+	public Transform particleAnchor;
 	public Transform particle;
 	public Gear[] gears;
 	public int targetGear;
+	public float holdTime;
 	
 	enum Lane { Top, Bottom, Left, Right };
 	
@@ -18,9 +21,12 @@ public class GearController : MonoBehaviour {
 	private bool reverse = true;
 	private int currentGear = -1;
 	
+	private bool holding;
+	private float hold;
+	
 	// Use this for initialization
 	void Start () {
-		transform.localPosition = Vector3.left * laneDistance;
+		transform.localPosition = Vector3.left * (laneWidth - gearRadius);
 		SwitchGear();
 	}
 	
@@ -46,11 +52,32 @@ public class GearController : MonoBehaviour {
 				JumpToLane(Lane.Top);
 			}
 			
-			if(Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("SwitchGear"))
+			if(Input.GetButton("SwitchGear") && hold > holdTime)
 			{
+				targetGear--;
+				targetGear = Mathf.Max(targetGear, 0);
+				SwitchGear();
+				hold = 0;
+			}
+			else if(Input.GetButtonDown("SwitchGear"))
+			{
+				holding = true;
 				targetGear++;
 				targetGear = Mathf.Min(targetGear, gears.Length - 1);
 				SwitchGear();
+			}
+			else if(Input.GetButtonUp("SwitchGear"))
+			{
+				holding = false;
+			}
+			
+			if(holding)
+			{
+				hold += Time.deltaTime;
+			}
+			else
+			{
+				hold = 0;	
 			}
 		}
 	}
@@ -58,7 +85,7 @@ public class GearController : MonoBehaviour {
 	void JumpToLane(Lane lane)
 	{
 		jumping = true;
-		particle.gameObject.SetActive(false);
+		particleAnchor.gameObject.SetActive(false);
 		targetLane = lane;
 		StopCoroutine("Jump");
 		StartCoroutine("Jump");
@@ -73,22 +100,24 @@ public class GearController : MonoBehaviour {
 		}
 		gears[currentGear].gameObject.SetActive(true);
 		
-		laneDistance = gears[currentGear].radius;
+		gearRadius = gears[currentGear].radius;
+		
+		particle.localPosition = new Vector3(gearRadius, 0, 0);
 		
 		Vector3 targetPos = Vector3.zero;
 		switch(currentLane)
 		{
 		case Lane.Bottom:
-			targetPos = new Vector3(0, -laneDistance,0);
+			targetPos = new Vector3(0, -(laneWidth - gearRadius),0);
 			break;
 		case Lane.Top:
-			targetPos = new Vector3(0, laneDistance,0);
+			targetPos = new Vector3(0, (laneWidth - gearRadius),0);
 			break;
 		case Lane.Left:
-			targetPos = new Vector3(-laneDistance, 0, 0);
+			targetPos = new Vector3(-(laneWidth - gearRadius), 0, 0);
 			break;
 		case Lane.Right:
-			targetPos = new Vector3(laneDistance, 0, 0);
+			targetPos = new Vector3((laneWidth - gearRadius), 0, 0);
 			break;
 		default:
 			break;
@@ -103,28 +132,28 @@ public class GearController : MonoBehaviour {
 		switch(targetLane)
 		{
 		case Lane.Bottom:
-			targetPos = new Vector3(0, -laneDistance,0);
+			targetPos = new Vector3(0, -(laneWidth - gearRadius),0);
 			targetRot = 270;
 			reverse = false;
-			particle.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+			particleAnchor.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
 			break;
 		case Lane.Top:
-			targetPos = new Vector3(0, laneDistance,0);
+			targetPos = new Vector3(0, (laneWidth - gearRadius),0);
 			targetRot = 90;
 			reverse = false;
-			particle.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+			particleAnchor.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
 			break;
 		case Lane.Left:
-			targetPos = new Vector3(-laneDistance, 0, 0);
+			targetPos = new Vector3(-(laneWidth - gearRadius), 0, 0);
 			targetRot = 0;
 			reverse = true;
-			particle.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+			particleAnchor.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 			break;
 		case Lane.Right:
-			targetPos = new Vector3(laneDistance, 0, 0);
+			targetPos = new Vector3((laneWidth - gearRadius), 0, 0);
 			targetRot = 180;
 			reverse = true;
-			particle.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+			particleAnchor.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 			break;
 		default:
 			break;
@@ -149,7 +178,7 @@ public class GearController : MonoBehaviour {
 			{
 				jumping = false;
 				currentLane = targetLane;
-				particle.gameObject.SetActive(true);
+				particleAnchor.gameObject.SetActive(true);
 			}
 			yield return null;
 		}
