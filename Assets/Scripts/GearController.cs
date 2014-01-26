@@ -7,6 +7,8 @@ public class GearController : MonoBehaviour {
 	public float laneDistance;
 	public Transform gear;
 	public Transform particle;
+	public Gear[] gears;
+	public int targetGear;
 	
 	enum Lane { Top, Bottom, Left, Right };
 	
@@ -14,10 +16,12 @@ public class GearController : MonoBehaviour {
 	private Lane currentLane = Lane.Left;
 	private Lane targetLane = Lane.Left; 
 	private bool reverse = true;
+	private int currentGear = -1;
 	
 	// Use this for initialization
 	void Start () {
 		transform.localPosition = Vector3.left * laneDistance;
+		SwitchGear();
 	}
 	
 	// Update is called once per frame
@@ -41,6 +45,13 @@ public class GearController : MonoBehaviour {
 			{
 				JumpToLane(Lane.Top);
 			}
+			
+			if(Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("SwitchGear"))
+			{
+				targetGear++;
+				targetGear = Mathf.Min(targetGear, gears.Length - 1);
+				SwitchGear();
+			}
 		}
 	}
 	
@@ -49,7 +60,40 @@ public class GearController : MonoBehaviour {
 		jumping = true;
 		particle.gameObject.SetActive(false);
 		targetLane = lane;
+		StopCoroutine("Jump");
 		StartCoroutine("Jump");
+	}
+	
+	void SwitchGear()
+	{
+		currentGear = targetGear;
+		for(int i = 0; i < gears.Length; i++)
+		{
+			gears[i].gameObject.SetActive(false);	
+		}
+		gears[currentGear].gameObject.SetActive(true);
+		
+		laneDistance = gears[currentGear].radius;
+		
+		Vector3 targetPos = Vector3.zero;
+		switch(currentLane)
+		{
+		case Lane.Bottom:
+			targetPos = new Vector3(0, -laneDistance,0);
+			break;
+		case Lane.Top:
+			targetPos = new Vector3(0, laneDistance,0);
+			break;
+		case Lane.Left:
+			targetPos = new Vector3(-laneDistance, 0, 0);
+			break;
+		case Lane.Right:
+			targetPos = new Vector3(laneDistance, 0, 0);
+			break;
+		default:
+			break;
+		}
+		transform.localPosition = targetPos;
 	}
 	
 	IEnumerator Jump()
@@ -101,13 +145,13 @@ public class GearController : MonoBehaviour {
 			}
 			rot.z = Mathf.Lerp(rot.z, targetRot, percent);
 			transform.localRotation = Quaternion.Euler(rot);
-			if(percent < 1)
+			if(percent > .5f)
 			{
-				yield return null;
+				jumping = false;
+				currentLane = targetLane;
+				particle.gameObject.SetActive(true);
 			}
+			yield return null;
 		}
-		jumping = false;
-		currentLane = targetLane;
-		particle.gameObject.SetActive(true);
 	}
 }
