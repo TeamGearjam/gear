@@ -97,6 +97,7 @@ public class GearController : MonoBehaviour {
 		currentLane = Lane.Bottom;
 		targetLane = Lane.Bottom;
 		reverse = false;
+		jumping = false;
 		particleAnchor.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
 		
 		pathController.Reset();
@@ -121,6 +122,8 @@ public class GearController : MonoBehaviour {
 		gears[currentGear].gameObject.SetActive(true);
 		
 		gearRadius = gears[currentGear].radius;
+		
+		pathController.speed = gears[currentGear].speed;
 		
 		particle.localPosition = new Vector3(gearRadius, 0, 0);
 		
@@ -206,6 +209,7 @@ public class GearController : MonoBehaviour {
 	
 	public void Gap()
 	{
+		StopCoroutine("Jump");
 		StartCoroutine("Death");
 	}
 	

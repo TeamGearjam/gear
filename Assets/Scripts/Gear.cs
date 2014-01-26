@@ -4,6 +4,7 @@ using System.Collections;
 public class Gear : MonoBehaviour {
 	public GearController controller;
 	public float radius;
+	public float speed;
 	// Use this for initialization
 	void Start () {
 	

@@ -6,6 +6,7 @@ public class PathController : MonoBehaviour {
 	public bool doFollow;
 	public float startDelay;
 	public float speed = 0.1f;
+	public GameObject speedObject;
 	float time;
 	
 	void Start () {
@@ -14,8 +15,13 @@ public class PathController : MonoBehaviour {
 	
 	void Update()
 	{
-		if(doFollow)
+		if(speedObject)
 		{
+			speedObject.SetActive(doFollow);	
+		}
+		
+		if(doFollow)
+		{			
 			Follow();
 		}
 	}
