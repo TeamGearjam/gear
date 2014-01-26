@@ -3,12 +3,14 @@ using System.Collections;
 
 public class Vector3Curve {
 	Transform start, end;
+	float curveFactor;
 	AnimationCurve x, y, z;
 	
-	public Vector3Curve(Transform start, Transform end)
+	public Vector3Curve(Transform start, Transform end, float curveFactor)
 	{
 		this.start = start;
 		this.end = end;
+		this.curveFactor = curveFactor;
 		InitializeCurve();
 	}
 	
@@ -19,29 +21,29 @@ public class Vector3Curve {
 		Keyframe key;
 		
 		key = new Keyframe(0, start.position.x);
-		key.inTangent = start.forward.x * 10;
-		key.outTangent = start.forward.x * 10;
+		key.inTangent = start.forward.x * curveFactor;
+		key.outTangent = start.forward.x * curveFactor;
 		key.tangentMode = 1;
 		x.AddKey(key);
 		
 		key = new Keyframe(1.0f, end.position.x);
 		key.tangentMode = 1;
-		key.inTangent = end.forward.x * 10;
-		key.outTangent = end.forward.x * 10;
+		key.inTangent = end.forward.x * curveFactor;
+		key.outTangent = end.forward.x * curveFactor;
 		x.AddKey(key);
 		
 		y = new AnimationCurve();
 		
 		key = new Keyframe(0, start.position.y);
 		key.tangentMode = 1;
-		key.inTangent = start.forward.y* 10;
-		key.outTangent = start.forward.y* 10;
+		key.inTangent = start.forward.y* curveFactor;
+		key.outTangent = start.forward.y* curveFactor;
 		y.AddKey(key);
 		
 		key = new Keyframe(1.0f, end.position.y);
 		key.tangentMode = 1;
-		key.inTangent = end.forward.y* 10;
-		key.outTangent = end.forward.y* 10;
+		key.inTangent = end.forward.y* curveFactor;
+		key.outTangent = end.forward.y* curveFactor;
 		y.AddKey(key);
 		
 		z = new AnimationCurve();
@@ -49,14 +51,14 @@ public class Vector3Curve {
 		
 		key = new Keyframe(0, start.position.z);
 		key.tangentMode = 1;
-		key.inTangent = start.forward.z* 10;
-		key.outTangent = start.forward.z* 10;
+		key.inTangent = start.forward.z* curveFactor;
+		key.outTangent = start.forward.z* curveFactor;
 		z.AddKey(key);
 		
 		key = new Keyframe(1.0f, end.position.z);
 		key.tangentMode = 1;
-		key.inTangent = end.forward.z* 10;
-		key.outTangent = end.forward.z* 10;
+		key.inTangent = end.forward.z* curveFactor;
+		key.outTangent = end.forward.z* curveFactor;
 		z.AddKey(key);
 		
 	}
@@ -72,6 +74,5 @@ public class Vector3Curve {
 		first = Evaluate(time);
 		second = Evaluate(time + .05f);
 		return Quaternion.LookRotation(second - first);
-		//return Quaternion.Euler(xRot,yRot,zRot);
 	}
 }

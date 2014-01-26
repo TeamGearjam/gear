@@ -11,12 +11,13 @@ public class GearController : MonoBehaviour {
 	enum Lane { Top, Bottom, Left, Right };
 	
 	private bool jumping;
+	private Lane currentLane = Lane.Left;
 	private Lane targetLane = Lane.Left; 
 	private bool reverse = true;
 	
 	// Use this for initialization
 	void Start () {
-	
+		transform.localPosition = Vector3.left * laneDistance;
 	}
 	
 	// Update is called once per frame
@@ -24,19 +25,19 @@ public class GearController : MonoBehaviour {
 		gear.Rotate(0, rotSpeed * Time.deltaTime * (reverse ? -1.0f : 1.0f), 0, Space.Self);
 		if(!jumping)
 		{
-			if(Input.GetAxisRaw("Horizontal") < 0)
+			if(Input.GetAxisRaw("Horizontal") < 0 && currentLane != Lane.Left)
 			{
 				JumpToLane(Lane.Left);
 			}
-			else if(Input.GetAxisRaw("Horizontal") > 0)
+			else if(Input.GetAxisRaw("Horizontal") > 0 && currentLane != Lane.Right)
 			{
 				JumpToLane(Lane.Right);
 			}
-			else if(Input.GetAxisRaw("Vertical") < 0)
+			else if(Input.GetAxisRaw("Vertical") < 0 && currentLane != Lane.Bottom)
 			{
 				JumpToLane(Lane.Bottom);
 			}
-			else if(Input.GetAxisRaw("Vertical") > 0)
+			else if(Input.GetAxisRaw("Vertical") > 0 && currentLane != Lane.Top)
 			{
 				JumpToLane(Lane.Top);
 			}
@@ -46,6 +47,7 @@ public class GearController : MonoBehaviour {
 	void JumpToLane(Lane lane)
 	{
 		jumping = true;
+		particle.gameObject.SetActive(false);
 		targetLane = lane;
 		StartCoroutine("Jump");
 	}
@@ -99,8 +101,13 @@ public class GearController : MonoBehaviour {
 			}
 			rot.z = Mathf.Lerp(rot.z, targetRot, percent);
 			transform.localRotation = Quaternion.Euler(rot);
-			yield return null;	
+			if(percent < 1)
+			{
+				yield return null;
+			}
 		}
 		jumping = false;
+		currentLane = targetLane;
+		particle.gameObject.SetActive(true);
 	}
 }

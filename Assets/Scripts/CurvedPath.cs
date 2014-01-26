@@ -9,17 +9,11 @@ public class CurvedPath : MonoBehaviour {
 		public Quaternion rotation;
 	}
 	
-	public float duration = 10;
+	public float curveFactor = 20f;
+	
+	public Transform points;
 	
 	public List<Transform> nodes = new List<Transform>();
-	
-	void OnDrawGizmos()
-	{
-		for(int i = 1; i < nodes.Count; i++)
-		{
-			Debug.DrawLine(nodes[i-1].position, nodes[i].position, Color.cyan);	
-		}
-	}
 	
 	public void AddNode(Transform node)
 	{
@@ -29,34 +23,43 @@ public class CurvedPath : MonoBehaviour {
 		{
 			int lastIndex = nodes.Count - 1;
 			
-			positionCurve = new Vector3Curve(nodes[lastIndex], node);
+			positionCurve = new Vector3Curve(nodes[lastIndex], node, curveFactor);
 			
 			for(float i = 0.1f; i < 1.1f; i += 0.1f)
 			{
 				Transform point = new GameObject("").transform;
 				point.position = positionCurve.Evaluate(i);
-				point.rotation = positionCurve.EvaluateRotation(i);//Quaternion.Slerp(nodes[lastIndex].rotation, node.rotation, i);
+				point.rotation = positionCurve.EvaluateRotation(i);
+				point.parent = points;
 				nodes.Add(point);
 			}
 		}
 		else
 		{
-			nodes.Add(node);
+			Transform point = new GameObject("").transform;
+			point.position = node.position;
+			point.rotation = node.rotation;
+			point.parent = points;
+			nodes.Add(point);
 		}
 		Destroy(node.gameObject);
 	}
 	
-	public Vector3 EvaluatePath(float time)
+	public Vector3 EvaluatePath(float percent)
 	{
-		float precise = (Mathf.Min(time / duration, 1.0f) * (nodes.Count - 1));
+		float precise = (Mathf.Min(percent, 1.0f) * (nodes.Count - 1));
 		int index = (int) precise;
-		Vector3 position = nodes[index].position + (nodes[Mathf.Min(nodes.Count - 1,index + 1)].position - nodes[index].position) * (precise - index);
-		return position;	
+		if(index + 1 < nodes.Count)
+		{
+			Vector3 position = nodes[index].position + (nodes[Mathf.Min(nodes.Count - 1,index + 1)].position - nodes[index].position) * (precise - index);
+			return position;
+		}
+		return nodes[nodes.Count - 1].position;
 	}
 	
-	public Quaternion EvaluateRotation(float time)
+	public Quaternion EvaluateRotation(float percent)
 	{
-		float precise = (Mathf.Min(time / duration, 1.0f) * (nodes.Count - 1));
+		float precise = (Mathf.Min(percent, 1.0f) * (nodes.Count - 1));
 		int index = (int) precise;
 		Vector3 rotation = nodes[index].rotation.eulerAngles;
 		if(rotation.z > 180)

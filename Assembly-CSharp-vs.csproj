@@ -48,6 +48,7 @@
      <Compile Include="Assets\Scripts\GearController.cs" />
      <Compile Include="Assets\Scripts\PathController.cs" />
      <Compile Include="Assets\Scripts\PathGenerator.cs" />
+     <Compile Include="Assets\Scripts\RailTrail.cs" />
      <Compile Include="Assets\Scripts\SmoothFollowCamera.cs" />
      <Compile Include="Assets\Scripts\Vector3Curve.cs" />
   </ItemGroup>

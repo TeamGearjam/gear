@@ -5,8 +5,9 @@ public class PathController : MonoBehaviour {
 	public CurvedPath path;
 	public bool doFollow;
 	public float startDelay;
+	public float speed = 0.1f;
 	float time;
-	// Use this for initialization
+	
 	void Start () {
 		StartCoroutine("DelayStart");
 	}
@@ -15,10 +16,15 @@ public class PathController : MonoBehaviour {
 	{
 		if(doFollow)
 		{
-			time += Time.deltaTime;
-			transform.position = path.EvaluatePath(time);
-			transform.rotation = path.EvaluateRotation(time);
+			Follow();
 		}
+	}
+	
+	void Follow()
+	{
+		time += speed * Time.deltaTime;
+		transform.position = path.EvaluatePath(time);
+		transform.rotation = path.EvaluateRotation(time);
 	}
 	
 	IEnumerator DelayStart()
